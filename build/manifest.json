@@ -1,0 +1,22 @@
+{
+   "name": "User-Agent Switcher +",
+   "version": "1.0.0",
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "description": "User-Agent Switcher +",
+   "permissions": [ "tabs", "webRequest", "webRequestBlocking", "<all_urls>" ],
+   "background": {
+      "scripts": [ "assets/utils.js", "assets/background.js" ]
+   },
+   "browser_action": {
+      "default_title": "User-Agent Switcher +",
+      "default_icon": "assets/img/128.png",
+      "default_popup": "popup.html"
+   },
+   "icons": {
+      "128": "assets/img/128.png", // delete dialog
+      "48": "assets/img/48.png" // chrome://extensions
+   },
+   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", // doT eval
+   "options_page": "popup.html#options",
+   "manifest_version": 2
+}

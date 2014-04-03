@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Popup</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="hd">
+	<nav class="fr">
+		<i id="j-spoof" class="icon-battery" data-title="Permanent Spoof List"></i>
+		<i id="j-conf" class="icon-cog" data-title="Settings"></i>
+	</nav>
+	<div id="j-filter" class="main-box">
+		<label for="j-search"><i class="icon icon-search"></i></label>
+		<input type="search" id="j-search" tabindex="1" placeholder="Search">
+	</div>
+	<h3 id="j-title" class="main-box curr-title"></h3>
+	<nav class="nav">
+		<i id="j-showUA" class="icon-list"></i>
+		<i id="j-addUA" class="icon-add-to-list" data-title="Add user-agent"></i>
+	</nav>
+</header>
+<section id="j-bd" class="bd">
+	<form action="#" id="j-uaForm" class="ua-add">
+	<ul class="form">
+		<li>
+			<label class="lab">User-agent name</label>
+			<input type="text" class="form-inp" id="j-uaName">
+		</li>
+		<li>
+			<label class="lab">User-Agent String</label>
+			<input type="text" class="form-inp" id="j-uaStr">
+		</li>
+		<li>
+			<label class="lab">Indicator Flag</label>
+			<input type="text" class="flag form-inp" maxlength="4" id="j-uaFlag"> - 
+			<input type="text" class="group form-inp" placeholder="Group name" id="j-uaGroup">
+		</li>
+		<li>
+			<input type="hidden" class="j-saveType">
+			<button id="j-addUABtn" class="gh-button primary">Save user-agent</button>
+		</li>
+	</ul>
+	</form>
+	<div id="j-uaList"></div>
+	<div id="j-spoofBox" class="hide">
+		<ul id="j-spoofList" class="spoof-list list"></ul>
+		<form action="#" id="j-spoofForm">
+		<ul class="form">
+			<li>
+				<label class="lab">Domain</label>
+				<input type="text" class="form-inp" id="j-domain">
+			</li>
+			<li>
+				<label class="lab">User-Agent</label>
+				<label class="form-sel">
+				<select id="j-spoofUASel"></select>
+				</label>
+			</li>
+			<li>
+				<input type="hidden" class="j-saveType">
+				<button id="j-addSpoofBtn" class="gh-button primary">Save spoof</button>
+			</li>
+		</ul>
+		</form>
+	</div>
+	<div id="j-confBox" class="pt10 conf hide">
+		<ul class="form">
+			<li>
+				<label class="lab">Backup settings</label>
+				<button class="j-backup gh-button">Make Backup</button>
+			</li>
+			<li>
+				<label class="lab">Restore settings</label>
+				<input type="file" id="rfile" name="rfile" style="visibility:hidden;position:absolute;">
+				<button class="j-restore gh-button">Restore from File</button>
+			</li>
+		</ul>
+		<hr>
+		<ul class="form">
+			<li>
+				<label class="lab">Clear spoof list</label>
+				<button class="j-delAllspoof gh-button danger">Delete all Rules</button>
+			</li>
+			<li></li>
+			<li>
+				<label class="lab">Reset user-agent</label>
+				<button class="j-resetUA gh-button danger">Reset "known" user-agent</button>
+			</li>
+		</ul>
+	</div>
+</section>
+<div class="hide">
+<textarea id="j-uaListTmpl" class="hide">
+	<ul class="list">
+		{{ var tabIdx = 2;}}
+		{{ for(var type in it.list) {var uaList = it.list[type];  }}
+			{{ for(var groupName in uaList) {var group = uaList[groupName]; }}
+				{{ if(!it.filter || group[0]) { }}
+				<li class="group" data-type="{{=type}}">
+					<p class="fr act">
+						{{?!it.filter}}<i class="j-groupAct act-btn icon-cross" data-action="del"></i>{{?}}
+					</p>
+					<h4 class="title" contenteditable="true">{{=groupName}}</h4>
+				</li>
+				{{ } }}
+				{{~group :item:index}}
+				{{?item}}
+				<li class="item">
+					<p class="fr act">
+						<b class="ua-name">{{=item.title || ''}}</b>
+						{{?!item.readonly}}
+						<i class="j-uaAct act-btn icon-pencil" data-action="mod"></i>
+						<i class="j-uaAct act-btn icon-cross" data-action="del"></i>
+						{{?}}
+					</p>
+					<p class="fl"><b class="flag">{{=item.slug || 'NONE'}}</b></p>
+					<h4 class="title">
+						<a class="j-chgUA" tabindex="{{=tabIdx}}" href="#" data-index="{{=groupName}}::{{=index}}">{{=item.ua || '[Default user-agent string]'}}</a>
+					</h4>
+				</li>
+				{{ tabIdx++ }}
+				{{?}}
+				{{~}}
+			{{ } }}
+		{{ } }}
+	</ul>
+</textarea>
+<textarea id="j-spoofListTmpl" class="hide">
+	{{~it :item:index}}
+	<li class="item" data-index="{{=index}}">
+		<p class="fr act">
+			<b class="ua-name">{{=item.domain || ''}}</b>
+			<i class="j-spoofAct act-btn icon-pencil" data-action="mod"></i>
+			<i class="j-spoofAct act-btn icon-cross" data-action="del"></i>
+		</p>
+		<p class="fl"><b class="flag">{{=item.slug || 'NONE'}}</b></p>
+		<h4 class="title">{{=item.ua || '[Default user-agent string]'}}</h4>
+	</li>
+	{{~}}
+</textarea>
+<textarea id="j-spoofUATmpl" class="hide">
+	{{ for(var type in it) {var uaList = it[type];  }}
+	{{ for(var groupName in uaList) {var group = uaList[groupName]; }}
+		{{~group :item:index}}
+		<option value="{{=item.ua}}" data-slug="{{=item.slug}}">{{=item.title || ''}}</option>
+		{{~}}
+	{{ } }}
+	{{ } }}
+</textarea>
+</div>
+<script src="assets/jquery.min.js"></script>
+<script src="assets/doT.min.js"></script>
+<script src="assets/FileSaver.js"></script>
+<script src="assets/jquery.confirm.js"></script>
+<script src="assets/utils.js"></script>
+<script src="assets/popup.js"></script>
+</body>
+</html>
+
