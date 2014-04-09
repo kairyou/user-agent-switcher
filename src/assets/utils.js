@@ -74,33 +74,46 @@ var K = {
 		HYPERLINK.href = url;
 		return HYPERLINK.host;
 	},
-	isMatchDomain: function(url, domain) {
+	matchDomain: function(url, domain) {
+		var ret = 0;
 		var hostname = this.hostname(url);
-		return domain == hostname || domain == url || hostname.indexOf(domain) > -1;
+		if (domain == hostname || domain == url) {
+			ret = 1;
+		} else if(hostname.indexOf(domain) > -1) {
+			ret = 2;
+		}
+		return ret;
 	},
 	saveCurrUA: function(val) {
 		K.local(CURR_INDEX, val);
 	},
 	getCurrUA: function(url) {
-		var ret = null, group,
+		var ret = {}, group,
 			ualist = this.uaList(), spoofList = this.spoofList(),
 			index = K.local(CURR_INDEX);
-		if (!index) return ret;
+		if (!index || !url) return ret;
 		index = index.split('::');
 		group = ualist['base'][index[0]] || ualist['custom'][index[0]];
 		// console.log(group);
-		ret = group ? group[index[1]] : {};
+		if (group) ret = group[index[1]];
 		// console.log(spoofList);
-		if (!ret.ua && url) { // default ua match
-			for (var i = 0, j = spoofList.length; i < j; i++) {
-				var item = spoofList[i];
-				if (item && item.domain && item.ua && this.isMatchDomain(url, item.domain)) {
-					ret = item;
+		if (ret.ua) return ret;
+		// else: !ret.ua (is default ua)
+		var match = {};
+		for (var i = 0, j = spoofList.length; i < j; i++) {
+			var item = spoofList[i];
+			var matchVal = this.matchDomain(url, item.domain);
+			if (item && item.domain && item.ua && matchVal > 0) {
+				if (matchVal == 2) {
+					match.secondary = item;
+				} else if (matchVal == 1) {
+					match.primary = item;
 					break;
 				}
 			}
 		}
-		return ret;
+		// console.log('match', match, url);
+		return match.primary || match.secondary || ret;
 	},
 	saveFileAs: function(fileName, fileData) {
 		try {

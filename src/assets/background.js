@@ -3,10 +3,12 @@
 // ICON上显示文本
 function updateBadge() {
 	chrome.tabs.getSelected(null, function(tab) {
+		if (!tab && !tab.url) return;
 		var currUA = K.getCurrUA(tab.url);
 		// console.log(currUA);
 		var slug = currUA && currUA.slug;
-		var color = (currUA.domain) ? [255, 0, 126, 150] : [0, 165, 113, 190];
+		var domain = currUA && currUA.domain;
+		var color = domain ? [255, 0, 126, 150] : [0, 165, 113, 190];
 		chrome.browserAction.setBadgeBackgroundColor({
 			color:color//, tabId: tab.id //
 		});
