@@ -9,7 +9,7 @@ cp $src_dir/manifest.json $build_dir
 cp $src_dir/popup.html $build_dir
 
 [[ ! -d $build_dir/assets ]] && mkdir -p $build_dir/assets
-cp $src_dir/assets/icomoon.svg $build_dir/assets
+cp -r $src_dir/assets/fonts $build_dir/assets/fonts
 cp -r $src_dir/assets/img $build_dir/assets
 
 cp $src_dir/assets/jquery.min.js $build_dir/assets

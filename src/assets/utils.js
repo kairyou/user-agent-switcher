@@ -91,11 +91,14 @@ var K = {
 		var ret = {}, group,
 			ualist = this.uaList(), spoofList = this.spoofList(),
 			index = K.local(CURR_INDEX);
-		if (!index || !url) return ret;
-		index = index.split('::');
-		group = ualist['base'][index[0]] || ualist['custom'][index[0]];
-		// console.log(group);
-		if (group) ret = group[index[1]];
+		// console.log(index, url);
+		if (!url) return ret;
+		if (index) {
+			index = index.split('::');
+			group = ualist['base'][index[0]] || ualist['custom'][index[0]];
+			// console.log(index, url, group);
+			if (group) ret = group[index[1]];
+		}
 		// console.log(spoofList);
 		if (ret.ua) return ret;
 		// else: !ret.ua (is default ua)
